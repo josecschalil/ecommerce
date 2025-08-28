@@ -6,6 +6,8 @@ import FeaturesSection from "./components/label";
 import NewArrivals from "./components/new-arrival";
 import NewsletterFooter from "./components/footer";
 import ProductShowcase from "./components/featured";
+import CategorySelector from "./components/category";
+import ClientHappiness from "./components/review";
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -55,7 +57,7 @@ const Home = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-[#000000] via-[#223943] to-[#000000] relative overflow-hidden">
+      <div className="= min-h-screen bg-gradient-to-br from-[#000000] via-[#223943] to-[#000000] relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden ">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#2a1f1c] rounded-full blur-3xl animate-pulse"></div>
@@ -106,7 +108,7 @@ const Home = () => {
             </div>
 
             {/* Right Content - Image */}
-            <div className="relative z-10 flex items-center justify-center">
+            <div className="md:block hidden relative z-10 flex items-center justify-center">
               <div className="relative">
                 {/* Glow Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-full blur-3xl scale-150 animate-pulse"></div>
@@ -167,6 +169,8 @@ const Home = () => {
       <FeaturesSection />
       <NewArrivals />
       <ProductShowcase />
+      <CategorySelector />
+      <ClientHappiness />
       <NewsletterFooter />
     </>
   );

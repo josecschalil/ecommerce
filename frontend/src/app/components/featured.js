@@ -12,7 +12,7 @@ const ProductShowcase = () => {
       rating: 5.0,
       reviews: 2,
       image:
-        "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRvtupxbEcZDAg6UoW6DrKe8ozWUS7BxNQVSkwuAIIXkhsbGxzA0Oq1DjMpWYiA4HeMWWV3HAHo-PG-55db8XDdre4vHEMP4DbncO3YFlqx2tnDUR_xAKgE_mM",
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/m/o/b/-original-imaghx9qkugtbfrn.jpeg?q=100",
       hasOptions: true,
       inCart: false,
       onSale: false,
@@ -25,7 +25,8 @@ const ProductShowcase = () => {
       originalPrice: "122,500.00",
       rating: 4.0,
       reviews: 2,
-      image: "🔥",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/1/p/c/-original-imah9khhnfvstqka.jpeg?q=100",
       hasOptions: true,
       inCart: false,
       onSale: true,
@@ -38,7 +39,8 @@ const ProductShowcase = () => {
       originalPrice: null,
       rating: null,
       reviews: null,
-      image: "🥤",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/c/v/p/-original-imah4jyfcjgcghqs.jpeg?q=100",
       hasOptions: true,
       inCart: false,
       onSale: false,
@@ -51,7 +53,8 @@ const ProductShowcase = () => {
       originalPrice: null,
       rating: 5.0,
       reviews: 2,
-      image: "🎮",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/u/r/r/-original-imah9khh8wgzdafb.jpeg?q=100",
       hasOptions: false,
       inCart: true,
       onSale: false,
@@ -70,8 +73,12 @@ const ProductShowcase = () => {
       )}
 
       {/* Product Image */}
-      <div className="bg-gray-100 h-64 flex items-center justify-center relative">
-        <div className="text-8xl">{product.image}</div>
+      <div className="bg-gray-100 h-64 flex items-center justify-center relative overflow-hidden">
+        <img
+          src={product.image}
+          className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+          alt={product.name}
+        />
       </div>
 
       {/* Product Info */}
