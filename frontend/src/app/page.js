@@ -6,7 +6,7 @@ import NewArrivals from "./components/new-arrival";
 import ProductShowcase from "./components/featured";
 import CategorySelector from "./components/category";
 import ClientHappiness from "./components/review";
-
+import OfferDisplay from "./components/offer";
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -168,6 +168,7 @@ const Home = () => {
       <NewArrivals />
       <ProductShowcase />
       <CategorySelector />
+      <OfferDisplay />
       <ClientHappiness />
     </>
   );

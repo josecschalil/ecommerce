@@ -9,8 +9,8 @@ import {
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
-const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+const Navbar = ({ isHome }) => {
+  const [isScrolled, setIsScrolled] = useState(!isHome);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
 
@@ -27,12 +27,16 @@ const Navbar = () => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const heroHeight = window.innerHeight * 0.08; // 8% of viewport height
-      setIsScrolled(scrollPosition > heroHeight);
+      if (isHome) {
+        setIsScrolled(scrollPosition > heroHeight);
+      } else {
+        setIsScrolled(true);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHome]);
 
   // Toggle mobile dropdown
   const toggleDropdown = (name) => {
