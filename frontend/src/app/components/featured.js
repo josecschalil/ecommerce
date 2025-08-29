@@ -62,18 +62,16 @@ const ProductShowcase = () => {
   ];
 
   const ProductCard = ({ product }) => (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
       {/* Sale Badge */}
       {product.onSale && (
-        <div className="absolute z-10 mt-4 ml-4">
-          <span className="bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
-            SALE
-          </span>
-        </div>
+        <span className="absolute top-4 left-4 bg-gray-100 text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
+          SALE
+        </span>
       )}
 
       {/* Product Image */}
-      <div className="bg-gray-100 h-64 flex items-center justify-center relative overflow-hidden">
+      <div className="bg-gray-100 aspect-square flex items-center justify-center relative overflow-hidden">
         <img
           src={product.image}
           className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
@@ -84,12 +82,12 @@ const ProductShowcase = () => {
       {/* Product Info */}
       <div className="p-6">
         <div className="text-sm text-gray-500 mb-2">{product.category}</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">
           {product.name}
         </h3>
 
         {/* Price */}
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
           <span className="text-lg font-medium text-gray-900">
             From Rs. {product.price}
           </span>
@@ -101,7 +99,7 @@ const ProductShowcase = () => {
         </div>
 
         {/* Actions and Rating */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           {product.hasOptions ? (
             <button className="text-gray-700 font-medium underline underline-offset-2 hover:text-gray-900 transition-colors">
               + Select options
@@ -120,6 +118,38 @@ const ProductShowcase = () => {
               <span className="text-sm text-gray-500">({product.reviews})</span>
             </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="bg-white py-12 px-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 gap-6">
+          <div className="flex-1 max-w-2xl">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+              Highly Recommended
+            </h2>
+            <p className="text-gray-600 text-lg leading-relaxed">
+              Electronics products continue to drive innovation and shape the
+              way we live, work, and interact with our environment.
+            </p>
+          </div>
+
+          <div>
+            <button className="px-6 py-3 border-2 border-gray-300 rounded-full text-gray-700 font-medium hover:border-gray-400 hover:bg-gray-50 transition-all duration-200 w-full md:w-auto">
+              View All
+            </button>
+          </div>
+        </div>
+
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       </div>
     </div>

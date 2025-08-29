@@ -1,10 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Navbar from "./components/navbar";
 import FeaturesSection from "./components/label";
 import NewArrivals from "./components/new-arrival";
-import NewsletterFooter from "./components/footer";
 import ProductShowcase from "./components/featured";
 import CategorySelector from "./components/category";
 import ClientHappiness from "./components/review";
@@ -70,7 +68,7 @@ const Home = () => {
             style={{ animationDuration: "4s" }}
           ></div>
         </div>
-        <Navbar />
+
         {/* Hero Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
@@ -171,7 +169,6 @@ const Home = () => {
       <ProductShowcase />
       <CategorySelector />
       <ClientHappiness />
-      <NewsletterFooter />
     </>
   );
 };
