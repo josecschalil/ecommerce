@@ -8,8 +8,9 @@ import {
   X,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-
+import { useRouter } from "next/navigation";
 const Navbar = ({ isHome }) => {
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(!isHome);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -136,7 +137,10 @@ const Navbar = ({ isHome }) => {
                 </span>
               </button>
 
-              <button className="text-gray-300 hover:text-white transition-all duration-300 p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110">
+              <button
+                className="text-gray-300 hover:text-white transition-all duration-300 p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110"
+                onClick={() => router.push("/login")} // Redirect to login page
+              >
                 <User className="w-5 h-5" />
               </button>
             </div>

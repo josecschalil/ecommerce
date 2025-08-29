@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Eye,
   EyeOff,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 
 const SignupForm = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -508,7 +510,10 @@ const SignupForm = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
-              <button className="font-medium text-blue-600 hover:text-blue-800 transition-colors">
+              <button
+                className="font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                onClick={() => router.push("/login")}
+              >
                 Sign in here
               </button>
             </p>
