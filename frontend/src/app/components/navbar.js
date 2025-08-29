@@ -26,7 +26,7 @@ const Navbar = ({ isHome }) => {
     },
     {
       name: "Shop",
-      href: "/shop",
+      href: "/Shop",
       hasDropdown: true,
       dropOne: "About Us",
       dropTwo: "T&C",
