@@ -16,11 +16,46 @@ const Navbar = ({ isHome }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
 
   const navigationItems = [
-    { name: "Home", href: "/", hasDropdown: true },
-    { name: "Shop", href: "/shop", hasDropdown: true },
-    { name: "Products", href: "/products", hasDropdown: true },
-    { name: "Pages", href: "/pages", hasDropdown: true },
-    { name: "Contact", href: "/contact", hasDropdown: false },
+    {
+      name: "Home",
+      href: "/",
+      hasDropdown: true,
+      dropOne: "About Us",
+      dropTwo: "T&C",
+      dropThree: "FAQ",
+    },
+    {
+      name: "Shop",
+      href: "/shop",
+      hasDropdown: true,
+      dropOne: "About Us",
+      dropTwo: "T&C",
+      dropThree: "FAQ",
+    },
+    {
+      name: "Products",
+      href: "/products",
+      hasDropdown: true,
+      dropOne: "About Us",
+      dropTwo: "T&C",
+      dropThree: "FAQ",
+    },
+    {
+      name: "Pages",
+      href: "/pages",
+      hasDropdown: true,
+      dropOne: "About Us",
+      dropTwo: "T&C",
+      dropThree: "FAQ",
+    },
+    {
+      name: "Contact",
+      href: "/contact",
+      hasDropdown: false,
+      dropOne: "About Us",
+      dropTwo: "T&C",
+      dropThree: "FAQ",
+    },
   ];
 
   // Scroll detection for navbar background
@@ -95,19 +130,19 @@ const Navbar = ({ isHome }) => {
                             href="#"
                             className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-colors duration-200"
                           >
-                            Submenu Item 1
+                            {item.dropOne}
                           </a>
                           <a
                             href="#"
                             className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-colors duration-200"
                           >
-                            Submenu Item 2
+                            {item.dropTwo}
                           </a>
                           <a
                             href="#"
                             className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-colors duration-200"
                           >
-                            Submenu Item 3
+                            {item.dropThree}
                           </a>
                         </div>
                       </div>
