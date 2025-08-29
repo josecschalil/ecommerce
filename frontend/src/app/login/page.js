@@ -100,7 +100,7 @@ const LoginForm = () => {
                       ? "border-red-300 ring-2 ring-red-100"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
-                  placeholder="Enter your email"
+                  placeholder="test@example.com"
                 />
               </div>
               {errors.email && (
