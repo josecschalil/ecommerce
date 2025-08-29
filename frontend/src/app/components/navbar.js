@@ -127,7 +127,7 @@ const Navbar = ({ isHome }) => {
                       >
                         <div className="py-2">
                           <a
-                            href="#"
+                            href={item.href}
                             className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-colors duration-200"
                           >
                             {item.dropOne}
