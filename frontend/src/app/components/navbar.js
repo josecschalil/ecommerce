@@ -20,6 +20,9 @@ const Navbar = ({ isHome }) => {
       name: "Home",
       href: "/",
       hasDropdown: true,
+      dropOneHref: "/about",
+      dropTwoHref: "/terms",
+      dropThreeHref: "/faq",
       dropOne: "About Us",
       dropTwo: "T&C",
       dropThree: "FAQ",
@@ -28,13 +31,16 @@ const Navbar = ({ isHome }) => {
       name: "Shop",
       href: "/Shop",
       hasDropdown: true,
-      dropOne: "About Us",
-      dropTwo: "T&C",
-      dropThree: "FAQ",
+      dropOneHref: "/Shop",
+      dropTwoHref: "/Shop",
+      dropThreeHref: "/Shop",
     },
     {
       name: "Products",
       href: "/products",
+      dropOneHref: "/products",
+      dropTwoHref: "/products/single",
+      dropThreeHref: "/products/checkout",
       hasDropdown: true,
       dropOne: "About Us",
       dropTwo: "T&C",
@@ -43,6 +49,9 @@ const Navbar = ({ isHome }) => {
     {
       name: "Pages",
       href: "/pages",
+      dropOneHref: "/pages/about",
+      dropTwoHref: "/pages/terms",
+      dropThreeHref: "/pages/faq",
       hasDropdown: true,
       dropOne: "About Us",
       dropTwo: "T&C",
@@ -127,19 +136,19 @@ const Navbar = ({ isHome }) => {
                       >
                         <div className="py-2">
                           <a
-                            href={item.href}
+                            href={item.dropOneHref}
                             className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-colors duration-200"
                           >
                             {item.dropOne}
                           </a>
                           <a
-                            href="#"
+                            href={item.dropTwoHref}
                             className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-colors duration-200"
                           >
                             {item.dropTwo}
                           </a>
                           <a
-                            href="#"
+                            href={item.dropThreeHref}
                             className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-colors duration-200"
                           >
                             {item.dropThree}
@@ -228,22 +237,22 @@ const Navbar = ({ isHome }) => {
                 {item.hasDropdown && openDropdown === item.name && (
                   <div className="pl-6 space-y-1">
                     <a
-                      href="#"
+                      href={item.dropOneHref}
                       className="block px-4 py-2 text-sm text-gray-400 hover:text-white"
                     >
-                      Submenu Item 1
+                      {item.dropOne}
                     </a>
                     <a
-                      href="#"
+                      href={item.dropTwoHref}
                       className="block px-4 py-2 text-sm text-gray-400 hover:text-white"
                     >
-                      Submenu Item 2
+                      {item.dropTwo}
                     </a>
                     <a
-                      href="#"
+                      href={item.dropThreeHref}
                       className="block px-4 py-2 text-sm text-gray-400 hover:text-white"
                     >
-                      Submenu Item 3
+                      {item.dropThree}
                     </a>
                   </div>
                 )}
