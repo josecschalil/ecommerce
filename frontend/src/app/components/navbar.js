@@ -34,6 +34,9 @@ const Navbar = ({ isHome }) => {
       dropOneHref: "/Shop",
       dropTwoHref: "/Shop",
       dropThreeHref: "/Shop",
+      dropOne: "All Products",
+      dropTwo: "Popular Items",
+      dropThree: "New Arrivals",
     },
     {
       name: "Products",

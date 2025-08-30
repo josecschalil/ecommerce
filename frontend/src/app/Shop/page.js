@@ -16,7 +16,8 @@ const ShoppingPage = () => {
       name: "Pottu pookalam - onam earrings",
       price: 799.0,
       originalPrice: 999.0,
-      image: "/api/placeholder/300/400",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/m/o/b/-original-imaghx9qkugtbfrn.jpeg?q=100",
       rating: 4.8,
       reviews: 124,
       colors: ["red", "gold"],
@@ -26,7 +27,8 @@ const ShoppingPage = () => {
       id: 2,
       name: "Kasav n thetti poov - onam earrings",
       price: 545.0,
-      image: "/api/placeholder/300/400",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/1/p/c/-original-imah9khhnfvstqka.jpeg?q=100",
       rating: 4.9,
       reviews: 89,
       colors: ["white", "red", "gold"],
@@ -36,7 +38,8 @@ const ShoppingPage = () => {
       id: 3,
       name: "Marigold bloom - onam earring",
       price: 649.0,
-      image: "/api/placeholder/300/400",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/u/r/r/-original-imah9khh8wgzdafb.jpeg?q=100",
       rating: 4.7,
       reviews: 156,
       colors: ["yellow", "green"],
@@ -46,7 +49,8 @@ const ShoppingPage = () => {
       name: "Zari glow - onam earrings",
       price: 465.0,
       originalPrice: 580.0,
-      image: "/api/placeholder/300/400",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/m/o/b/-original-imaghx9qkugtbfrn.jpeg?q=100",
       rating: 4.6,
       reviews: 78,
       colors: ["white", "gold"],
@@ -55,7 +59,8 @@ const ShoppingPage = () => {
       id: 5,
       name: "Banana leaf - onam earrings",
       price: 560.0,
-      image: "/api/placeholder/300/400",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/1/p/c/-original-imah9khhnfvstqka.jpeg?q=100",
       rating: 4.8,
       reviews: 203,
       colors: ["green", "gold"],
@@ -65,7 +70,8 @@ const ShoppingPage = () => {
       id: 6,
       name: "Onathumbi - onam earrings",
       price: 549.0,
-      image: "/api/placeholder/300/400",
+      image:
+        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/u/r/r/-original-imah9khh8wgzdafb.jpeg?q=100",
       rating: 4.5,
       reviews: 67,
       colors: ["white", "gold"],
@@ -103,7 +109,7 @@ const ShoppingPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50 py-20">
+    <div className="min-h-screen bg-white py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search Bar - Moved to the top */}
         <div className="mb-6">
@@ -112,7 +118,7 @@ const ShoppingPage = () => {
             <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-4 backdrop-blur-lg bg-white/90">
               <div className="relative">
                 <div className="absolute left-6 top-1/2 transform -translate-y-1/2 z-10">
-                  <div className="p-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500">
+                  <div className="p-2 rounded-full bg-slate-900/95">
                     <Search className="h-5 w-5 text-white" />
                   </div>
                 </div>
@@ -150,7 +156,7 @@ const ShoppingPage = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white/70 backdrop-blur-sm border border-rose-200 rounded-full px-4 py-2 pr-8 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 outline-none cursor-pointer"
+                  className="appearance-none bg-white/70 backdrop-blur-sm border border-gray-500 rounded-full px-4 py-2 pr-8 focus:border-gray-400 focus:ring-2 focus:ring-slate-200 outline-none cursor-pointer text-black/60 font-medium"
                 >
                   <option value="featured">Featured</option>
                   <option value="price-low">Price: Low to High</option>
@@ -163,7 +169,7 @@ const ShoppingPage = () => {
             </div>
 
             {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
@@ -171,8 +177,12 @@ const ShoppingPage = () => {
                 >
                   <div className="relative overflow-hidden">
                     <div className="aspect-w-3 aspect-h-4 bg-gradient-to-br from-rose-100 to-amber-100">
-                      <div className="w-full h-80 flex items-center justify-center text-gray-400 text-sm">
-                        Product Image
+                      <div className="w-full h-60 flex items-center justify-center text-gray-400 text-sm ">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                        />
                       </div>
                     </div>
 
@@ -204,7 +214,7 @@ const ShoppingPage = () => {
                   </div>
 
                   <div className="p-5">
-                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-rose-600 transition-colors line-clamp-2">
+                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors line-clamp-2">
                       {product.name}
                     </h3>
 
@@ -261,10 +271,10 @@ const ShoppingPage = () => {
                           </span>
                         )}
                       </div>
-                      <button className="bg-gradient-to-r from-rose-500 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:shadow-lg hover:scale-105 transition-all duration-200">
-                        Add to Cart
-                      </button>
                     </div>
+                    <button className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 mt-4 mb-2 rounded-full text-sm font-medium hover:shadow-lg hover:scale-105 transition-all duration-200">
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               ))}
