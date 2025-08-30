@@ -1,15 +1,15 @@
 "use client";
-import { useState } from "react";
+import { use, useState } from "react";
 import { Search, Filter, ChevronDown, Star, Heart } from "lucide-react";
 import FilterSidebar from "../components/filter";
-
+import { useRouter } from "next/navigation";
 const ShoppingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceRange, setPriceRange] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
-
+  const router = useRouter();
   const products = [
     {
       id: 1,
@@ -173,6 +173,7 @@ const ShoppingPage = () => {
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
+                  onClick={() => router.push(`/productDetails/`)}
                   className="group bg-white/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm border border-rose-100 hover:shadow-lg hover:border-rose-200 transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="relative overflow-hidden">
