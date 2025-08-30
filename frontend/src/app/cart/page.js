@@ -10,8 +10,8 @@ import {
   Star,
 } from "lucide-react";
 
-// The main App component, which is the entire shopping cart page.
-const App = () => {
+// The main CartPage component, which is the entire shopping cart page.
+const CartPage = () => {
   // State for managing items in the cart.
   const [cartItems, setCartItems] = useState([
     {
@@ -79,7 +79,7 @@ const App = () => {
 
   // Component to display when the cart is empty.
   const EmptyCart = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-16 md:py-24 flex items-center justify-center py-30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-16 md:py-24 flex items-center justify-center">
       <div className="max-w-md mx-auto w-full">
         {/* Empty State Card */}
         <div className="backdrop-blur-md bg-white/20 rounded-3xl border border-white/30 shadow-2xl p-6 sm:p-12 text-center">
@@ -108,7 +108,7 @@ const App = () => {
 
   // Main component render for when the cart has items.
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 sm:px-6 lg:px-8 py-30 md:py-30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="backdrop-blur-md bg-white/30 rounded-2xl border border-white/20 shadow-xl p-4 sm:p-6 mb-8">
@@ -173,7 +173,7 @@ const App = () => {
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-1">
                         <div className="flex items-center gap-1">
                           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                           <span className="text-sm text-slate-600">
@@ -188,7 +188,7 @@ const App = () => {
                     </div>
 
                     {/* Quantity and Price section */}
-                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between mt-auto">
+                    <div className="flex items-center justify-between mt-auto">
                       <div className="flex items-center backdrop-blur-sm bg-white/40 rounded-lg border border-white/30">
                         <button
                           onClick={() =>
@@ -212,7 +212,7 @@ const App = () => {
                           <Plus className="w-4 h-4 text-slate-700" />
                         </button>
                       </div>
-                      <div className="text-right w-full sm:w-auto">
+                      <div className="text-right">
                         <div className="text-lg sm:text-xl font-semibold text-slate-800">
                           ${(item.price * item.quantity).toFixed(2)}
                         </div>
@@ -346,4 +346,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default CartPage;
