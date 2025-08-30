@@ -108,7 +108,7 @@ const CartPage = () => {
 
   // Main component render for when the cart has items.
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 sm:px-6 lg:px-8 py-25 md:py-25">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="backdrop-blur-md bg-white/30 rounded-2xl border border-white/20 shadow-xl p-4 sm:p-6 mb-8">

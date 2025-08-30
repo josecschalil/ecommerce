@@ -417,7 +417,7 @@ const WishlistPage = () => {
                     ₹{product.price.toFixed(2)}
                   </span>
                 </div>
-                <button className="my-2 px-3 py-1 bg-slate-800 text-white rounded-md text-xs hover:bg-slate-700 transition-colors duration-200">
+                <button className="my-2 px-3 py-1 md:py-2 bg-slate-800 text-white rounded-md text-xs hover:bg-slate-700 transition-colors duration-200">
                   Add to Cart
                 </button>
               </div>
