@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+
 const Navbar = ({ isHome }) => {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(!isHome);
@@ -101,31 +102,31 @@ const Navbar = ({ isHome }) => {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-8xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 md:h-20">
           {/* Left: Logo */}
           <div className="flex-shrink-0">
             <a
               href="/"
-              className="text-white font-bold text-3xl tracking-wide bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+              className="text-white font-bold text-xl md:text-2xl lg:text-3xl tracking-wide bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
             >
               Elexy
             </a>
           </div>
 
           {/* Right: Navigation + Icons */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 md:space-x-6">
             {/* Desktop Navigation */}
             <div className="hidden md:block">
-              <div className="flex items-baseline space-x-4">
+              <div className="flex items-baseline space-x-1 lg:space-x-4">
                 {navigationItems.map((item) => (
                   <div key={item.name} className="relative group">
                     <a
                       href={item.href}
-                      className="text-gray-300 hover:text-white px-4 py-3 text-sm font-medium transition-all duration-300 flex items-center gap-1 hover:bg-slate-800/50 rounded-lg"
+                      className="text-gray-300 hover:text-white px-2 lg:px-4 py-2 lg:py-3 text-sm font-medium transition-all duration-300 flex items-center gap-1 hover:bg-slate-800/50 rounded-lg"
                     >
                       {item.name}
                       {item.hasDropdown && (
-                        <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
+                        <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 transition-transform duration-300 group-hover:rotate-180" />
                       )}
                     </a>
 
@@ -165,30 +166,36 @@ const Navbar = ({ isHome }) => {
             </div>
 
             {/* Right side icons (desktop only) */}
-            <div className="hidden md:flex items-center space-x-2">
-              <button className="text-gray-300 hover:text-white transition-all duration-300 p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110">
-                <Search className="w-5 h-5" />
+            <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
+              <button className="text-gray-300 hover:text-white transition-all duration-300 p-2 lg:p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110">
+                <Search className="w-4 h-4 lg:w-5 lg:h-5" />
               </button>
 
-              <button className="text-gray-300 hover:text-white transition-all duration-300 p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110 relative">
-                <Heart className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold animate-pulse">
-                  0
-                </span>
-              </button>
-
-              <button className="text-gray-300 hover:text-white transition-all duration-300 p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110 relative">
-                <ShoppingCart className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold animate-pulse">
+              <button
+                onClick={() => router.push("/wishlist")}
+                className="text-gray-300 hover:text-white transition-all duration-300 p-2 lg:p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110 relative"
+              >
+                <Heart className="w-4 h-4 lg:w-5 lg:h-5" />
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center font-bold animate-pulse">
                   0
                 </span>
               </button>
 
               <button
-                className="text-gray-300 hover:text-white transition-all duration-300 p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110"
-                onClick={() => router.push("/login")} // Redirect to login page
+                className="text-gray-300 hover:text-white transition-all duration-300 p-2 lg:p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110 relative"
+                onClick={() => router.push("/cart")}
               >
-                <User className="w-5 h-5" />
+                <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center font-bold animate-pulse">
+                  0
+                </span>
+              </button>
+
+              <button
+                className="text-gray-300 hover:text-white transition-all duration-300 p-2 lg:p-3 hover:bg-slate-800/50 rounded-xl hover:scale-110"
+                onClick={() => router.push("/login")}
+              >
+                <User className="w-4 h-4 lg:w-5 lg:h-5" />
               </button>
             </div>
 
@@ -196,7 +203,7 @@ const Navbar = ({ isHome }) => {
             <div className="md:hidden">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-gray-300 hover:text-white transition-all duration-300 p-3 hover:bg-slate-800/50 rounded-xl"
+                className="text-gray-300 hover:text-white transition-all duration-300 p-2 hover:bg-slate-800/50 rounded-xl"
               >
                 {isMobileMenuOpen ? (
                   <X className="w-5 h-5" />
@@ -211,7 +218,7 @@ const Navbar = ({ isHome }) => {
         {/* Mobile menu */}
         <div
           className={`md:hidden overflow-hidden transition-all duration-500 ${
-            isMobileMenuOpen ? "max-h-96" : "max-h-0"
+            isMobileMenuOpen ? "max-h-screen" : "max-h-0"
           }`}
         >
           <div
@@ -261,6 +268,46 @@ const Navbar = ({ isHome }) => {
                 )}
               </div>
             ))}
+
+            {/* Mobile Icons */}
+            <div className="flex justify-center space-x-4 pt-4 border-t border-slate-700/50">
+              <button className="text-gray-300 hover:text-white transition-all duration-300 p-2 hover:bg-slate-800/50 rounded-xl">
+                <Search className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => {
+                  router.push("/wishlist");
+                  setIsMobileMenuOpen(false);
+                }}
+                className="text-gray-300 hover:text-white transition-all duration-300 p-2 hover:bg-slate-800/50 rounded-xl relative"
+              >
+                <Heart className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  0
+                </span>
+              </button>
+              <button
+                className="text-gray-300 hover:text-white transition-all duration-300 p-2 hover:bg-slate-800/50 rounded-xl relative"
+                onClick={() => {
+                  router.push("/cart");
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  0
+                </span>
+              </button>
+              <button
+                className="text-gray-300 hover:text-white transition-all duration-300 p-2 hover:bg-slate-800/50 rounded-xl"
+                onClick={() => {
+                  router.push("/login");
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <User className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </nav>

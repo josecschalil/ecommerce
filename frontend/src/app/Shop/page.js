@@ -1,8 +1,9 @@
 "use client";
-import { use, useState } from "react";
+import { useState } from "react";
 import { Search, Filter, ChevronDown, Star, Heart } from "lucide-react";
-import FilterSidebar from "../components/filter";
 import { useRouter } from "next/navigation";
+import FilterSidebar from "../components/filter";
+
 const ShoppingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -10,6 +11,7 @@ const ShoppingPage = () => {
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
   const router = useRouter();
+
   const products = [
     {
       id: 1,
@@ -109,16 +111,15 @@ const ShoppingPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-white py-20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search Bar - Moved to the top */}
-        <div className="mb-6">
+        {/* Search Bar */}
+        <div className="mb-8">
           <div className="relative max-w-4xl mx-auto">
-            {/* Main search tile */}
-            <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-4 backdrop-blur-lg bg-white/90">
+            <div className="backdrop-blur-md bg-white/30 rounded-2xl border border-white/20 shadow-xl p-4">
               <div className="relative">
-                <div className="absolute left-6 top-1/2 transform -translate-y-1/2 z-10">
-                  <div className="p-2 rounded-full bg-slate-900/95">
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+                  <div className="p-2 rounded-full bg-slate-800/90 backdrop-blur-sm">
                     <Search className="h-5 w-5 text-white" />
                   </div>
                 </div>
@@ -127,62 +128,61 @@ const ShoppingPage = () => {
                   placeholder="Search for diamonds, rings, necklaces..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-20 pr-6 py-3 text-md rounded-2xl border-2 border-gray-200 focus:border-rose-300 focus:ring-4 focus:ring-rose-100 outline-none bg-gray-50/50 transition-all duration-300 placeholder-gray-400"
+                  className="w-full pl-16 pr-6 py-4 text-md rounded-xl bg-white/40 border border-white/30 placeholder-slate-500 text-slate-800 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-slate-400/50 focus:bg-white/50 transition-all duration-300"
                 />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-5">
-          {/* Sidebar Filters - Now positioned after search bar on mobile */}
-          <div className="lg:w-65 order-1 lg:order-1">
-            <FilterSidebar />
-          </div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <FilterSidebar />
 
           {/* Main Content */}
           <div className="flex-1 order-2 lg:order-2">
             {/* Sort and Results Info */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                  Onam Special Collection
-                </h2>
-                <p className="text-gray-600">
-                  {filteredProducts.length} products found
-                </p>
-              </div>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white/70 backdrop-blur-sm border border-gray-500 rounded-full px-4 py-2 pr-8 focus:border-gray-400 focus:ring-2 focus:ring-slate-200 outline-none cursor-pointer text-black/60 font-medium"
-                >
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="newest">Newest</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            <div className="backdrop-blur-md bg-white/25 rounded-2xl border border-white/30 shadow-xl p-6 mb-8">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <h2 className="text-2xl font-semibold text-slate-800 mb-1">
+                    Onam Special Collection
+                  </h2>
+                  <p className="text-slate-600">
+                    {filteredProducts.length} products found
+                  </p>
+                </div>
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="appearance-none backdrop-blur-sm bg-white/40 border border-white/30 rounded-xl px-4 py-3 pr-10 focus:bg-white/50 focus:ring-2 focus:ring-slate-400/50 outline-none cursor-pointer text-slate-700 font-medium transition-all duration-200"
+                  >
+                    <option value="featured">Featured</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="newest">Newest</option>
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
+                </div>
               </div>
             </div>
 
             {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
                   onClick={() => router.push(`/productDetails/`)}
-                  className="group bg-white/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-sm border border-rose-100 hover:shadow-lg hover:border-rose-200 transition-all duration-300 hover:-translate-y-1"
+                  className="group backdrop-blur-md bg-white/25 rounded-2xl border border-white/30 shadow-xl overflow-hidden hover:bg-white/35 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"
                 >
                   <div className="relative overflow-hidden">
-                    <div className="aspect-w-3 aspect-h-4 bg-gradient-to-br from-rose-100 to-amber-100">
-                      <div className="w-full h-60 flex items-center justify-center text-gray-400 text-sm ">
+                    <div className="aspect-w-3 aspect-h-4 bg-gradient-to-br from-white/20 to-slate-100/20">
+                      <div className="w-full h-48 flex items-center justify-center">
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                         />
                       </div>
                     </div>
@@ -190,50 +190,50 @@ const ShoppingPage = () => {
                     {/* Badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-1">
                       {product.isNew && (
-                        <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-green-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
                           New
                         </span>
                       )}
                       {product.isBestseller && (
-                        <span className="bg-rose-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-rose-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
                           Bestseller
                         </span>
                       )}
                     </div>
 
                     {/* Wishlist Button */}
-                    <button className="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-white hover:scale-110">
-                      <Heart className="h-4 w-4 text-gray-600 hover:text-rose-500" />
+                    <button className="absolute top-3 right-3 p-2 rounded-full bg-white/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/80 hover:scale-110 shadow-lg">
+                      <Heart className="h-4 w-4 text-slate-600 hover:text-rose-500" />
                     </button>
 
-                    {/* Quick View */}
-                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                      <button className="bg-white text-gray-900 px-6 py-2 rounded-full font-medium hover:bg-gray-50 transition-colors transform translate-y-4 group-hover:translate-y-0 transition-transform duration-200">
+                    {/* Quick View Overlay */}
+                    <div className="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                      <button className="bg-white/90 backdrop-blur-sm text-slate-800 px-6 py-3 rounded-xl font-medium hover:bg-white transition-all duration-200 transform translate-y-4 group-hover:translate-y-0 shadow-lg border border-white/30">
                         Quick View
                       </button>
                     </div>
                   </div>
 
                   <div className="p-5">
-                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors line-clamp-2">
+                    <h3 className="font-semibold text-slate-800 mb-3 group-hover:text-slate-900 transition-colors line-clamp-2 leading-snug">
                       {product.name}
                     </h3>
 
                     {/* Rating */}
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 mb-4">
                       <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
                             className={`h-4 w-4 ${
                               i < Math.floor(product.rating)
-                                ? "text-amber-400 fill-current"
-                                : "text-gray-300"
+                                ? "text-yellow-400 fill-current"
+                                : "text-slate-300"
                             }`}
                           />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-slate-600">
                         {product.rating} ({product.reviews})
                       </span>
                     </div>
@@ -243,7 +243,7 @@ const ShoppingPage = () => {
                       {product.colors.map((color, index) => (
                         <div
                           key={index}
-                          className={`w-4 h-4 rounded-full border-2 border-gray-200 ${
+                          className={`w-5 h-5 rounded-full border-2 border-white/50 shadow-sm backdrop-blur-sm ${
                             color === "red"
                               ? "bg-red-500"
                               : color === "gold"
@@ -254,26 +254,28 @@ const ShoppingPage = () => {
                               ? "bg-yellow-500"
                               : color === "green"
                               ? "bg-green-500"
-                              : "bg-gray-400"
+                              : "bg-slate-400"
                           }`}
                         />
                       ))}
                     </div>
 
                     {/* Price */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-xl font-bold text-gray-900">
+                        <span className="text-xl font-semibold text-slate-800">
                           ₹{product.price.toFixed(2)}
                         </span>
                         {product.originalPrice && (
-                          <span className="text-sm text-gray-500 line-through">
+                          <span className="text-sm text-slate-500 line-through">
                             ₹{product.originalPrice.toFixed(2)}
                           </span>
                         )}
                       </div>
                     </div>
-                    <button className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 mt-4 mb-2 rounded-full text-sm font-medium hover:shadow-lg hover:scale-105 transition-all duration-200">
+
+                    {/* Add to Cart Button */}
+                    <button className="w-full text-sm bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 rounded-xl font-medium hover:from-slate-700 hover:to-slate-600 transform hover:scale-[1.02] transition-all duration-300 shadow-lg">
                       Add to Cart
                     </button>
                   </div>
@@ -281,16 +283,18 @@ const ShoppingPage = () => {
               ))}
             </div>
 
+            {/* No Products Found */}
             {filteredProducts.length === 0 && (
-              <div className="text-center py-16">
-                <div className="text-gray-400 mb-4">
-                  <Search className="h-16 w-16 mx-auto" />
+              <div className="backdrop-blur-md bg-white/20 rounded-2xl border border-white/30 shadow-xl p-16 text-center">
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
+                  <Search className="h-12 w-12 text-slate-500" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-2xl font-semibold text-slate-800 mb-3">
                   No products found
                 </h3>
-                <p className="text-gray-600">
-                  Try adjusting your search or filter criteria
+                <p className="text-slate-600 max-w-md mx-auto">
+                  Try adjusting your search or filter criteria to find what
+                  you're looking for
                 </p>
               </div>
             )}
