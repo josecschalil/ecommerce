@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Activate Your Account</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #f9fafb;
+        padding: 30px;
+        text-align: center;
+        color: #333;
+      }
+      .container {
+        background: #ffffff;
+        padding: 30px 25px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        max-width: 520px;
+        margin: 0 auto;
+      }
+      .header {
+        background: linear-gradient(135deg, #0f766e, #115e59);
+        color: #ffffff;
+        padding: 15px;
+        border-radius: 10px 10px 0 0;
+        font-size: 20px;
+        font-weight: bold;
+      }
+      h2 {
+        color: #111827;
+        margin-top: 25px;
+        font-size: 22px;
+      }
+      p {
+        color: #4b5563;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .btn {
+        display: inline-block;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #0f766e, #115e59);
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-top: 20px;
+        font-size: 16px;
+        transition: background 0.3s ease;
+      }
+      .btn:hover {
+        background: linear-gradient(135deg, #115e59, #0d403c);
+      }
+      .divider {
+        margin: 25px 0;
+        height: 1px;
+        background: #e5e7eb;
+      }
+      .footer {
+        margin-top: 15px;
+        font-size: 13px;
+        color: #9ca3af;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">PrimeWave Ecommerce</div>
+      <h2>Welcome Aboard 🎉</h2>
+      <p>
+        Thanks for signing up! To complete your registration, please confirm
+        your email address by clicking the button below:
+      </p>
+
+      <a class="btn" style="color: #ffffff" href="{{ activation_url }}"
+        >Activate My Account</a
+      >
+
+      <div class="divider"></div>
+      <p>
+        If you didn’t create this account, you can safely ignore this email.
+      </p>
+      <p class="footer">© 2025 PrimeWave Ecommerce. All rights reserved.</p>
+    </div>
+  </body>
+</html>

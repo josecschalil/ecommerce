@@ -1,3 +1,56 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+import uuid
 
-# Create your models here.
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, name, phone, password=None, **extra_fields):
+        """
+        Create and return a normal user.
+        """
+        if not email:
+            raise ValueError("The Email field must be set")
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name, phone=phone, **extra_fields)
+        user.set_password(password)   # hash password
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, name, phone, password=None, **extra_fields):
+        """
+        Create and return a superuser with admin rights.
+        """
+        extra_fields.setdefault("is_admin", True)
+        extra_fields.setdefault("is_superuser", True)  # required by PermissionsMixin
+        extra_fields.setdefault("is_active", True)
+
+        return self.create_user(email, name, phone, password, **extra_fields)
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    """
+    Custom User model for E-commerce.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=150)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15, unique=True)
+    newsletter_subscription = models.BooleanField(default=False)
+
+    # Required for Django auth
+    is_active = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "email"   # login using email
+    REQUIRED_FIELDS = ["name", "phone"]  # extra fields asked when creating superuser
+
+    def __str__(self):
+        return self.email
+
+    @property
+    def is_staff(self):
+        """Django Admin requires this property"""
+        return self.is_admin

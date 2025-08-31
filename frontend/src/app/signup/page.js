@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
 // import { useRouter } from "next/navigation";
 import {
   Eye,
@@ -19,12 +20,13 @@ import {
 const SignupForm = () => {
   // const router = useRouter();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
+    firstName: "a",
+    lastName: "b",
+    name: "c",
+    email: "jose@gmail.com",
+    phone: "1012345678",
+    password: "PASSpass1234*#",
+    confirmPassword: "PASSpass1234*#",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -53,10 +55,16 @@ const SignupForm = () => {
   };
 
   const handleAgreementChange = (name) => {
-    setAgreements((prev) => ({
-      ...prev,
-      [name]: !prev[name],
-    }));
+    setAgreements((prev) => {
+      const updated = {
+        ...prev,
+        [name]: !prev[name],
+      };
+      console.log(updated.terms);
+      console.log(updated.newsletter);
+      return updated;
+    });
+
     if (errors.terms && name === "terms") {
       setErrors((prev) => ({
         ...prev,
@@ -138,13 +146,52 @@ const SignupForm = () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/signup/", {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        newsletter_subscription: agreements.newsletter,
+      });
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
       setIsSubmitted(true);
-      console.log("Signup submitted:", formData);
-    }, 2000);
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: "",
+      });
+    } catch (err) {
+      if (err.response && err.response.data) {
+        // API returned validation errors
+        const apiErrors = err.response.data;
+        const newErrors = {};
+
+        if (apiErrors.email) {
+          newErrors.email = apiErrors.email[0];
+          setIsLoading(false);
+        }
+        if (apiErrors.phone) {
+          newErrors.phone = apiErrors.phone[0];
+          setIsLoading(false);
+        }
+        if (apiErrors.password) {
+          newErrors.password = apiErrors.password[0];
+          setIsLoading(false);
+        }
+
+        setErrors(newErrors);
+      } else {
+        // generic fallback
+        setErrors({ general: "Something went wrong. Please try again." });
+        setIsLoading(false);
+      }
+    }
   };
 
   if (isSubmitted) {
