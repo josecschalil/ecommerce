@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-
+from .serializers import UserAuthenticationSerializer
 User = get_user_model()
 
 class UserRegisterView(APIView):
@@ -68,3 +68,16 @@ class VerifyEmailView(APIView):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             return Response({'message': 'Invalid token!'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class LoginView(APIView):
+    """Handles user authentication and token generation."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserAuthenticationSerializer(
+            data=request.data, context={'request': request}
+        )
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -52,5 +52,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_staff(self):
-        """Django Admin requires this property"""
         return self.is_admin
