@@ -1,5 +1,7 @@
 "use client";
 import React, { useState } from "react";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import {
   Eye,
   EyeOff,
@@ -14,8 +16,8 @@ import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "Josecschalil@gmail.com",
+    password: "PASSpass1234*#",
   });
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +65,23 @@ const LoginForm = () => {
 
     setIsLoading(true);
 
-    // Simulate API call
+    try {
+      const normalizedEmail = formData.email.toLowerCase();
+      const response = await axios.post("http://127.0.0.1:8000/api/token/", {
+        email: normalizedEmail,
+        password: formData.password,
+      });
+      const { access, refresh } = response.data;
+      const decodedToken = jwtDecode(access);
+      const userId = decodedToken.user_id;
+      localStorage.setItem("access_token", access);
+      localStorage.setItem("refresh_token", refresh);
+      localStorage.setItem("user_id", userId);
+      console.log("Login successful:", response.data);
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+
     setTimeout(() => {
       setIsLoading(false);
       console.log("Login submitted:", formData);
