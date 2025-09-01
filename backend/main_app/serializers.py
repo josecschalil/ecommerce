@@ -16,6 +16,13 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)   # hash password properly
         user.save()
         return user
+class UserProfileSerializer(serializers.ModelSerializer):
+    """Serializer for the User model, for displaying user profile details."""
+
+    class Meta:
+        model = User
+        # The 'name' field is now read directly from the User model.
+        fields = ['id', 'email', 'name'] 
 
 class UserAuthenticationSerializer(serializers.Serializer):
     """Serializer for user login and token generation."""

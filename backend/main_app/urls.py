@@ -1,6 +1,6 @@
 from django.urls import path
 # Import your custom views
-from .views import UserRegisterView, VerifyEmailView, LoginView
+from .views import UserProfileView, UserRegisterView, VerifyEmailView, LoginView
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -13,4 +13,5 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='user-login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('profile/', UserProfileView.as_view(), name='user-profile'),
 ]
