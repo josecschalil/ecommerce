@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import {
   Eye,
   EyeOff,
@@ -12,17 +11,22 @@ import {
   User,
   Shield,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+
+// --- KEY CHANGE ---
+// Configure Axios to automatically send and receive cookies with each request.
+// This should be set globally in your app's main entry point (e.g., App.js or index.js).
+// Placing it here works for a self-contained component.
+axios.defaults.withCredentials = true;
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: "Josecschalil@gmail.com",
     password: "PASSpass1234*#",
   });
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleInputChange = (e) => {
@@ -31,62 +35,73 @@ const LoginForm = () => {
       ...prev,
       [name]: value,
     }));
-
-    // Clear error when user starts typing
     if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+    if (apiError) {
+      setApiError("");
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email";
     }
-
     if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
+    setApiError("");
     if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
       const normalizedEmail = formData.email.toLowerCase();
-      const response = await axios.post("http://127.0.0.1:8000/api/token/", {
+      const response = await axios.post("http://127.0.0.1:8000/api/login/", {
         email: normalizedEmail,
         password: formData.password,
       });
-      const { access, refresh } = response.data;
-      const decodedToken = jwtDecode(access);
-      const userId = decodedToken.user_id;
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
-      localStorage.setItem("user_id", userId);
-      console.log("Login successful:", response.data);
+
+      // With HttpOnly cookies, we don't get tokens back in the response body.
+      // A successful status code (200 OK) is all we need to confirm the login.
+      // The browser will automatically store the cookies sent by the server.
+      if (response.status === 200) {
+        console.log("Login successful:", response.data.message);
+
+        // No longer need to store tokens or user ID in local storage.
+        // On success, redirect to the dashboard. Authenticated requests from here
+        // will automatically include the cookies.
+        window.location.href = "/dashboard";
+      }
     } catch (error) {
       console.error("Login error:", error);
-    }
-
-    setTimeout(() => {
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 400)
+      ) {
+        // The error response from DRF for invalid credentials might be in a 'non_field_errors'
+        // key or a general 'detail' key. This handles both.
+        const errorData = error.response.data;
+        const errorMessage =
+          errorData.detail ||
+          (errorData.non_field_errors
+            ? errorData.non_field_errors.join(" ")
+            : "Invalid email or password. Please try again.");
+        setApiError(errorMessage);
+      } else {
+        setApiError("An unexpected error occurred. Please try again later.");
+      }
+    } finally {
       setIsLoading(false);
-      console.log("Login submitted:", formData);
-      // Handle successful login here
-    }, 2000);
+    }
   };
 
   return (
@@ -94,10 +109,9 @@ const LoginForm = () => {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 bg-white/80 backdrop-blur-sm border border-gray-200/50 shadow-lg rounded-2xl flex items-center justify-center mx-auto mb-6">
             <User className="w-8 h-8 text-gray-600" />
           </div>
-
           <h1 className="text-3xl font-light text-gray-800 mb-3 tracking-wide">
             Welcome Back
           </h1>
@@ -186,6 +200,14 @@ const LoginForm = () => {
               )}
             </div>
 
+            {/* API Error Message Display */}
+            {apiError && (
+              <div className="flex items-start text-center gap-2.5 text-red-600 bg-red-50 p-3 rounded-lg text-sm mt-4">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <span className="flex-1">{apiError}</span>
+              </div>
+            )}
+
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between pt-2">
               <label className="flex items-center cursor-pointer">
@@ -199,7 +221,7 @@ const LoginForm = () => {
               </label>
               <button
                 type="button"
-                onClick={() => router.push("/forgot-password")}
+                onClick={() => (window.location.href = "/forgot-password")}
                 className="text-sm text-gray-800 hover:text-gray-900 font-medium underline underline-offset-2 transition-colors"
               >
                 Forgot password?
@@ -210,7 +232,7 @@ const LoginForm = () => {
             <button
               onClick={handleSubmit}
               disabled={isLoading}
-              className={`w-full py-4 rounded-2xl font-medium text-sm tracking-wide transition-all duration-300 shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-2 ${
+              className={`w-full py-4 rounded-2xl font-medium text-sm tracking-wide transition-all duration-300 shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-2 group ${
                 isLoading
                   ? "bg-gray-400 text-white cursor-not-allowed"
                   : "bg-gray-800 hover:bg-gray-900 text-white"
@@ -272,7 +294,7 @@ const LoginForm = () => {
             <p className="text-gray-600">
               Don't have an account?{" "}
               <button
-                onClick={() => router.push("/signup")}
+                onClick={() => (window.location.href = "/signup")}
                 className="text-gray-800 hover:text-gray-900 font-medium underline underline-offset-2 transition-colors"
               >
                 Sign up now
