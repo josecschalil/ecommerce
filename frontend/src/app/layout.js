@@ -5,9 +5,7 @@ import Navbar from "./components/navbar";
 import NewsletterFooter from "./components/footer";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-
-// import your refresh function
-import { refreshToken } from "./lib/auth"; // <- make sure this file exists
+import { refreshToken } from "./lib/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,20 +20,18 @@ const geistMono = Geist_Mono({
 export default function RootLayout({ children }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
+
   useEffect(() => {
-    async function setupRefresh() {
-      // Try once at app load
-      await refreshToken();
+    // Run once on load
+    refreshToken();
 
-      // Then schedule periodic refresh
-      const interval = setInterval(() => {
-        refreshToken();
-      }, 28 * 60 * 1000);
+    // Schedule periodic refresh
+    const interval = setInterval(() => {
+      refreshToken();
+    }, 28 * 60 * 1000);
 
-      return () => clearInterval(interval);
-    }
-
-    setupRefresh();
+    // ✅ cleanup runs correctly now
+    return () => clearInterval(interval);
   }, []);
 
   return (

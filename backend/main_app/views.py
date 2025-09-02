@@ -111,7 +111,42 @@ class LoginView(APIView):
         )
 
         return response
+class LogoutView(APIView):
+    permission_classes = [AllowAny]
 
+    def post(self, request):
+        try:
+            # Retrieve the refresh token from the cookie
+            refresh_token = request.COOKIES.get('refresh_token')
+            if refresh_token is None:
+                return Response(
+                    {"error": "Refresh token not found in cookies."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Blacklist the refresh token
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            # Prepare a response
+            response = Response(
+                {"message": "Logout successful."},
+                status=status.HTTP_200_OK
+            )
+
+            # Delete the cookies from the user's browser
+            response.delete_cookie('access_token')
+            response.delete_cookie('refresh_token')
+
+            return response
+            
+        except Exception as e:
+            return Response(
+                {"error": "An error occurred during logout."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
        

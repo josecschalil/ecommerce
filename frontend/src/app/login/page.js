@@ -49,7 +49,6 @@ const LoginForm = () => {
         } catch (refreshError) {
           // If the refresh also fails, the user is not authenticated. Show the login form.
           console.log("No valid session found. Please log in.");
-          setIsVerifying(false); // Stop verifying and show the form
         }
       }
     };

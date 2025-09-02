@@ -20,8 +20,10 @@ import OrderHistory from "../components/orderHistory";
 import ProfileWishlistPage from "../components/profileWishlist";
 import ProfileCartPage from "../components/cart";
 import AddressSection from "../components/address";
-
+import { useRouter } from "next/navigation";
+import { apiFetch } from "../lib/api";
 const ProfilePage = () => {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [activeTab, setActiveTab] = useState("basic-data");
@@ -49,7 +51,19 @@ const ProfilePage = () => {
   const activeItem =
     sidebarItems.find((item) => item.id === activeTab) || sidebarItems[0];
   const ActiveIcon = activeItem.icon;
-
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/logout/", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      router.push("/login");
+    } catch (err) {
+      setError("Network error occurred");
+      console.error("Error Logging Out:", err);
+    }
+  };
   const handleSave = () => {
     setUserInfo(editedInfo);
     setIsEditing(false);
@@ -335,8 +349,8 @@ const ProfilePage = () => {
                     return (
                       <button
                         key={item.id}
-                        onClick={() => {
-                          console.log("Logging out...");
+                        onClick={async () => {
+                          handleLogout();
                           setIsMobileMenuOpen(false);
                         }}
                         className="w-full flex items-center gap-3 px-3 py-2 text-left text-slate-700 hover:bg-white/30 rounded-lg transition-colors"
@@ -399,7 +413,7 @@ const ProfilePage = () => {
                   return (
                     <button
                       key={item.id}
-                      onClick={() => console.log("Logging out...")}
+                      onClick={() => handleLogout()}
                       className="w-full flex items-center gap-3 px-4 py-3 text-left text-slate-700 hover:bg-white/30 rounded-xl transition-all duration-200 backdrop-blur-sm border border-transparent hover:border-white/20"
                     >
                       <Icon className="w-5 h-5 flex-shrink-0" />
