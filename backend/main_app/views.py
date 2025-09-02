@@ -74,62 +74,47 @@ class VerifyEmailView(APIView):
 
 
 class LoginView(APIView):
-    """
-    Handles user authentication and sets access and refresh tokens
-    in secure HttpOnly cookies.
-    """
+
     permission_classes = [AllowAny]
 
     def post(self, request):
-        # Initialize the serializer with request data
         serializer = UserAuthenticationSerializer(
             data=request.data, 
             context={'request': request}
         )
-        
-        # Validate the data, raising an exception if it's invalid
-        serializer.is_valid(raise_exception=True)
 
-        # Extract token data from the validated serializer
+        serializer.is_valid(raise_exception=True)
         token_data = serializer.validated_data
         access_token = token_data['access']
         refresh_token = token_data['refresh']
 
-        # Create a response object
         response = Response(
             {"message": "Login successful."},
             status=status.HTTP_200_OK
         )
 
-        # Set the access token cookie 🍪
+      
         response.set_cookie(
             key='access_token',
             value=access_token,
-            httponly=True,  # Prevents client-side JS from accessing the cookie
-            expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-            domain="127.0.0.1",
-            samesite='Lax', # Provides CSRF protection
-            secure=not settings.DEBUG, # Ensures cookie is sent only over HTTPS in production
+            httponly=True,
+            samesite='None',
+            secure=True, 
         )
 
-        # Set the refresh token cookie 🍪
+       
         response.set_cookie(
             key='refresh_token',
             value=refresh_token,
-            httponly=True, # Prevents client-side JS from accessing the cookie
-            expires=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
-            domain="127.0.0.1",
-            samesite='Lax', # Provides CSRF protection
-            secure=not settings.DEBUG, # Ensures cookie is sent only over HTTPS in production
+            httponly=True,
+            samesite='None',
+            secure=True
         )
 
         return response
 
 class CustomTokenRefreshView(TokenRefreshView):
-    """
-    Custom token refresh view that reads the refresh token from an
-    HttpOnly cookie and returns the new access token in another one.
-    """
+
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get('refresh_token')
 
@@ -139,19 +124,15 @@ class CustomTokenRefreshView(TokenRefreshView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Add the refresh token to the request data so that the
-        # parent class can process it.
+
         request.data['refresh'] = refresh_token
 
         try:
-            # Call the parent class's post method to refresh the token
             response = super().post(request, *args, **kwargs)
 
             if response.status_code == 200:
                 access_token = response.data.get('access')
 
-                # The parent class's response includes the new access token
-                # in the body. We create a new response to set it in a cookie.
                 new_response = Response(
                     {"message": "Access token refreshed successfully"},
                     status=status.HTTP_200_OK
@@ -167,7 +148,7 @@ class CustomTokenRefreshView(TokenRefreshView):
                 )
                 return new_response
 
-            return response # Return original error response if refresh failed
+            return response
         
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -179,14 +160,3 @@ class UserProfileView(APIView):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
 
-# views.py
-class CookieTestView(APIView):
-    permission_classes = [AllowAny]
-    
-    def get(self, request):
-        cookies = request.COOKIES
-        return Response({
-            'cookies_received': cookies,
-            'access_token_present': 'access_token' in cookies,
-            'refresh_token_present': 'refresh_token' in cookies,
-        })

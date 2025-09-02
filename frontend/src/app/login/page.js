@@ -12,10 +12,6 @@ import {
   Shield,
 } from "lucide-react";
 
-// --- KEY CHANGE ---
-// Configure Axios to automatically send and receive cookies with each request.
-// This should be set globally in your app's main entry point (e.g., App.js or index.js).
-// Placing it here works for a self-contained component.
 axios.defaults.withCredentials = true;
 
 const LoginForm = () => {
