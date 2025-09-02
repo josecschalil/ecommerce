@@ -22,6 +22,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 User = get_user_model()
 
 class UserRegisterView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -35,11 +36,7 @@ class UserRegisterView(APIView):
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-        current_site = get_current_site(request)
-        relative_link = reverse(
-            'verify-email', kwargs={'uidb64': uid, 'token': token})
-        full_url = f'http://{current_site.domain}{relative_link}'
-        print("Relative Link:", relative_link)
+        full_url = f"http://localhost:3000/verify-email/{uid}/{token}/"
         print("Full URL:", full_url)
 
         email_subject = "Activate your account"
@@ -117,7 +114,7 @@ class LoginView(APIView):
 
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-        # Try to get refresh token from cookie
+       
         refresh_token = request.COOKIES.get("refresh_token")
         if refresh_token is None:
             return Response({"detail": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED)

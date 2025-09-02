@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Eye,
@@ -24,6 +24,38 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  useEffect(() => {
+    const verifySession = async () => {
+      try {
+        // Step 1: Optimistically check if the access token is still valid.
+        // We do this by hitting a protected endpoint that requires authentication.
+        // A common endpoint is one that fetches the current user's data.
+        await axios.get("http://127.0.0.1:8000/api/user/profile/"); // ⚠️ ASSUMPTION: This is your protected route
+
+        // If the request above succeeds, the access token is valid. Redirect.
+        console.log("Active session found. Redirecting to profile.");
+        window.location.href = "/profile";
+      } catch (error) {
+        // If it fails (e.g., 401 Unauthorized), the access token is likely expired.
+        console.log("Access token invalid, attempting to refresh...");
+
+        try {
+          // Step 2: Fallback to refreshing the token using the HttpOnly refresh token.
+          await axios.post("http://127.0.0.1:8000/api/token/refresh/");
+
+          // If the refresh is successful, new tokens are set by the backend. Redirect.
+          console.log("Token refresh successful. Redirecting to profile.");
+          window.location.href = "/profile";
+        } catch (refreshError) {
+          // If the refresh also fails, the user is not authenticated. Show the login form.
+          console.log("No valid session found. Please log in.");
+          setIsVerifying(false); // Stop verifying and show the form
+        }
+      }
+    };
+
+    verifySession();
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

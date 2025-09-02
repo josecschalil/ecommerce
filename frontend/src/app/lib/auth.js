@@ -1,33 +1,27 @@
-// lib/auth.js
-let refreshTimeout;
-
 export async function refreshToken() {
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
+    const response = await fetch("http://127.0.0.1:8000/api/token/refresh/", {
       method: "POST",
-      credentials: "include",
+      credentials: "include", // send cookie if it exists
+      headers: { "Content-Type": "application/json" },
     });
 
-    if (res.ok) {
-      console.log("Token refreshed successfully");
-
-      // Schedule next refresh in ~4.5 minutes (if access = 5 min)
-      scheduleRefresh(0.5 * 60 * 1000);
-
-      return true;
-    } else {
-      console.warn("Refresh token expired or invalid");
-      clearTimeout(refreshTimeout);
-      return false;
+    // ✅ If user has no cookie, do nothing (don’t throw error)
+    if (response.status === 401) {
+      console.log("No refresh token yet. Probably user not logged in.");
+      return null;
     }
-  } catch (err) {
-    console.error("Refresh error:", err);
-    clearTimeout(refreshTimeout);
-    return false;
-  }
-}
 
-export function scheduleRefresh(intervalMs) {
-  clearTimeout(refreshTimeout);
-  refreshTimeout = setTimeout(refreshToken, intervalMs);
+    if (!response.ok) {
+      console.error("Failed to refresh token");
+      return null;
+    }
+
+    const data = await response.json();
+    console.log("Access token refreshed:", data.access);
+    return data.access;
+  } catch (err) {
+    console.error("Error refreshing token:", err);
+    return null;
+  }
 }

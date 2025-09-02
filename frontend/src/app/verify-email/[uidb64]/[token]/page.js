@@ -23,7 +23,7 @@ const VerifyEmailPage = () => {
     if (pathname) {
       const pathParts = pathname.split("/");
       // Expected format: /verify-email/[uidb64]/[token]
-      if (pathParts.length >= 4 && pathParts[1] === "verification") {
+      if (pathParts.length >= 4 && pathParts[1] === "verify-email") {
         const extractedUidb64 = pathParts[2];
         const extractedToken = pathParts[3];
         setUidb64(extractedUidb64);
@@ -36,7 +36,7 @@ const VerifyEmailPage = () => {
     if (uidb64 && token) {
       console.log("Extracted parameters:", { uidb64, token }); // Debug log
       verifyEmail();
-    } else if (pathname && pathname.includes("/verification/")) {
+    } else if (pathname && pathname.includes("/verify-email/")) {
       // Still extracting parameters, wait a bit
       setTimeout(() => {
         if (!uidb64 || !token) {

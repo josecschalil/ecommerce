@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 // import { useRouter } from "next/navigation";
 import {
@@ -18,7 +19,7 @@ import {
 } from "lucide-react";
 
 const SignupForm = () => {
-  // const router = useRouter();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: "a",
     lastName: "b",
@@ -148,7 +149,7 @@ const SignupForm = () => {
     setIsLoading(true);
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/signup/", {
-        name: formData.name,
+        name: formData.firstName + " " + formData.lastName,
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
@@ -230,7 +231,7 @@ const SignupForm = () => {
 
             <div className="space-y-3">
               <button
-                onClick={() => console.log("Navigate to login")}
+                onClick={() => router.push("/login")}
                 className="w-full py-4 bg-gray-800 text-white rounded-2xl font-medium hover:bg-gray-900 transition-all duration-300 shadow-lg text-sm tracking-wide"
               >
                 Continue to Sign In

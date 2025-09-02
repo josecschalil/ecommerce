@@ -22,17 +22,20 @@ const geistMono = Geist_Mono({
 export default function RootLayout({ children }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
-
   useEffect(() => {
-    // Run refresh once when app loads
-    refreshToken();
+    async function setupRefresh() {
+      // Try once at app load
+      await refreshToken();
 
-    // Optionally: schedule refresh every 14 min (if token lifespan = 15 min)
-    const interval = setInterval(() => {
-      refreshToken();
-    }, 0.45 * 60 * 1000);
+      // Then schedule periodic refresh
+      const interval = setInterval(() => {
+        refreshToken();
+      }, 28 * 60 * 1000);
 
-    return () => clearInterval(interval); // cleanup
+      return () => clearInterval(interval);
+    }
+
+    setupRefresh();
   }, []);
 
   return (
