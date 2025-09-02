@@ -25,8 +25,6 @@ SECRET_KEY = 'django-insecure-ob1!i*q#h)g6j6hrsn3#vgp1o7b-r#_8hsjc5_ygr+!c7*+1*b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,8 +42,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -71,14 +69,27 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.136.179"]
 
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://127.0.0.1:3000", # Add other origins as needed
+    "http://127.0.0.1:3000",
+    "http://192.168.136.179:3000",  # added LAN IP
 ]
-CORS_ALLOW_CREDENTIALS = True 
-# Database
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://192.168.136.179:3000",  # added LAN IP
+]
+
+# Cookies config
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SECURE = False  # change to True in production with HTTPS
+CSRF_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SECURE = False
+
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 DATABASES = {
     'default': {

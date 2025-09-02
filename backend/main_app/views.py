@@ -107,6 +107,7 @@ class LoginView(APIView):
             value=access_token,
             httponly=True,  # Prevents client-side JS from accessing the cookie
             expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+            domain="127.0.0.1",
             samesite='Lax', # Provides CSRF protection
             secure=not settings.DEBUG, # Ensures cookie is sent only over HTTPS in production
         )
@@ -117,6 +118,7 @@ class LoginView(APIView):
             value=refresh_token,
             httponly=True, # Prevents client-side JS from accessing the cookie
             expires=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+            domain="127.0.0.1",
             samesite='Lax', # Provides CSRF protection
             secure=not settings.DEBUG, # Ensures cookie is sent only over HTTPS in production
         )
@@ -176,3 +178,15 @@ class UserProfileView(APIView):
     def get(self, request):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
+
+# views.py
+class CookieTestView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        cookies = request.COOKIES
+        return Response({
+            'cookies_received': cookies,
+            'access_token_present': 'access_token' in cookies,
+            'refresh_token_present': 'refresh_token' in cookies,
+        })
