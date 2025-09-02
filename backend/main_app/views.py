@@ -16,6 +16,8 @@ from django.contrib.auth import get_user_model
 from .serializers import UserAuthenticationSerializer
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.conf import settings
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 User = get_user_model()
 
@@ -114,45 +116,19 @@ class LoginView(APIView):
         return response
 
 class CustomTokenRefreshView(TokenRefreshView):
-
     def post(self, request, *args, **kwargs):
-        refresh_token = request.COOKIES.get('refresh_token')
+        # Try to get refresh token from cookie
+        refresh_token = request.COOKIES.get("refresh_token")
+        if refresh_token is None:
+            return Response({"detail": "Refresh token missing"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if not refresh_token:
-            return Response(
-                {"error": "Refresh token not found in cookies."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-
-        request.data['refresh'] = refresh_token
-
+        serializer = self.get_serializer(data={"refresh": refresh_token})
         try:
-            response = super().post(request, *args, **kwargs)
-
-            if response.status_code == 200:
-                access_token = response.data.get('access')
-
-                new_response = Response(
-                    {"message": "Access token refreshed successfully"},
-                    status=status.HTTP_200_OK
-                )
-                
-                new_response.set_cookie(
-                    key='access_token',
-                    value=access_token,
-                    httponly=True,
-                    expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-                    samesite='Lax',
-                    secure=settings.DEBUG is False,
-                )
-                return new_response
-
-            return response
-        
+            serializer.is_valid(raise_exception=True)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -1,32 +1,43 @@
-import axios from "axios";
+import { refreshToken } from "./auth";
 
-const api = axios.create({
-  baseURL: "http://localhost:8000/api",
-  withCredentials: true, // always include cookies
-});
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 
-// Response interceptor
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      try {
-        // attempt refresh
-        await api.post(
-          "/token/refresh/",
-          {},
-          { withCredentials: true } // ✅ config, not body
-        );
+export async function apiFetch(url, options = {}, retry = true) {
+  try {
+    const isFormData = options.body instanceof FormData;
 
-        // retry original request
-        return api(error.config);
-      } catch (refreshError) {
-        console.error("Refresh failed, redirect to login");
-        // Here you can clear state, redirect, etc.
-      }
+    const response = await fetch(`${API_BASE_URL}${url}`, {
+      method: options.method || "GET",
+      credentials: "include",
+      headers: {
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        ...(options.headers || {}),
+      },
+      body: options.body
+        ? isFormData
+          ? options.body
+          : JSON.stringify(options.body)
+        : undefined,
+    });
+
+    if (response.ok) {
+      // Safely parse JSON if present
+      const text = await response.text();
+      return text ? JSON.parse(text) : null;
     }
-    return Promise.reject(error);
-  }
-);
 
-export default api;
+    if (response.status === 401 && retry) {
+      const refreshed = await refreshToken();
+      if (refreshed) {
+        return apiFetch(url, options, false); // retry once only
+      }
+      throw new Error("Unauthorized and refresh failed");
+    }
+
+    throw new Error(`Request failed with status ${response.status}`);
+  } catch (err) {
+    console.error("apiFetch error:", err);
+    throw err;
+  }
+}

@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null);
@@ -15,9 +14,7 @@ const Dashboard = () => {
         const response = await fetch("http://127.0.0.1:8000/api/profile/", {
           method: "GET",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         });
 
         if (response.ok) {
