@@ -53,3 +53,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_admin
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    original_price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    key_features = models.JSONField(default=list)  # Store array as JSON
+    size = models.JSONField(default=list)          # Store array as JSON
+    image1 = models.URLField(max_length=500, blank=True, null=True)
+    image2 = models.URLField(max_length=500, blank=True, null=True)
+    image3 = models.URLField(max_length=500, blank=True, null=True)
+    image4 = models.URLField(max_length=500, blank=True, null=True)
+    category = models.CharField(max_length=100)  # Could also be a ForeignKey if needed
+
+    def __str__(self):
+        return self.name

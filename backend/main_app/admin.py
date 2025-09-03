@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import Product, User
 
 class CustomUserAdmin(UserAdmin):
     model = User
@@ -24,3 +24,10 @@ class CustomUserAdmin(UserAdmin):
     )
 
 admin.site.register(User, CustomUserAdmin)
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'price', 'original_price', 'category')
+    search_fields = ('name', 'category')
+    list_filter = ('category',)
+    ordering = ('id',)

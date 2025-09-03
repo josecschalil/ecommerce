@@ -36,18 +36,14 @@ const LoginForm = () => {
         console.log("Active session found. Redirecting to profile.");
         window.location.href = "/profile";
       } catch (error) {
-        // If it fails (e.g., 401 Unauthorized), the access token is likely expired.
         console.log("Access token invalid, attempting to refresh...");
 
         try {
-          // Step 2: Fallback to refreshing the token using the HttpOnly refresh token.
           await axios.post("http://127.0.0.1:8000/api/token/refresh/");
 
-          // If the refresh is successful, new tokens are set by the backend. Redirect.
           console.log("Token refresh successful. Redirecting to profile.");
           window.location.href = "/profile";
         } catch (refreshError) {
-          // If the refresh also fails, the user is not authenticated. Show the login form.
           console.log("No valid session found. Please log in.");
         }
       }
@@ -97,16 +93,10 @@ const LoginForm = () => {
         password: formData.password,
       });
 
-      // With HttpOnly cookies, we don't get tokens back in the response body.
-      // A successful status code (200 OK) is all we need to confirm the login.
-      // The browser will automatically store the cookies sent by the server.
       if (response.status === 200) {
         console.log("Login successful:", response.data.message);
 
-        // No longer need to store tokens or user ID in local storage.
-        // On success, redirect to the dashboard. Authenticated requests from here
-        // will automatically include the cookies.
-        window.location.href = "/dashboard";
+        window.location.href = "/profile";
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -114,8 +104,6 @@ const LoginForm = () => {
         error.response &&
         (error.response.status === 401 || error.response.status === 400)
       ) {
-        // The error response from DRF for invalid credentials might be in a 'non_field_errors'
-        // key or a general 'detail' key. This handles both.
         const errorData = error.response.data;
         const errorMessage =
           errorData.detail ||
