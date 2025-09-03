@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Plus,
@@ -15,25 +15,10 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
-const ProductManager = () => {
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Sample Product",
-      price: 500,
-      original_price: 700,
-      description:
-        "This is a sample product with great features and excellent quality",
-      key_features: ["Lightweight", "Durable", "Eco-friendly"],
-      size: ["S", "M", "L"],
-      image1: "https://example.com/img1.jpg",
-      image2: "https://example.com/img2.jpg",
-      image3: "https://example.com/img3.jpg",
-      image4: "https://example.com/img4.jpg",
-      category: "Electronics",
-    },
-  ]);
+const API_URL = "http://127.0.0.1:8000/api/products/";
 
+const ProductManager = () => {
+  const [products, setProducts] = useState([]);
   const [currentView, setCurrentView] = useState("list");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,6 +28,7 @@ const ProductManager = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -58,8 +44,98 @@ const ProductManager = () => {
     category: "",
   });
 
-  const categories = [...new Set(products.map((p) => p.category))];
+  // Fetch products on first render
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const categories = useMemo(() => {
+    return [...new Set(products.map((p) => p.category))];
+  }, [products]);
+
+  const addProduct = async (product) => {
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add product");
+      }
+
+      const data = await response.json();
+      setProducts((prev) => [...prev, data]);
+      return data;
+    } catch (error) {
+      console.error("Error adding product:", error);
+      throw error;
+    }
+  };
+
+  const updateProduct = async (id, updatedData) => {
+    try {
+      const response = await fetch(`${API_URL}${id}/`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update product");
+      }
+
+      const data = await response.json();
+      setProducts((prev) => prev.map((p) => (p.id === id ? data : p)));
+      return data;
+    } catch (error) {
+      console.error("Error updating product:", error);
+      throw error;
+    }
+  };
+
+  const deleteProduct = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
+
+    try {
+      const response = await fetch(`${API_URL}${id}/`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete product");
+      }
+
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("Failed to delete product. Please try again.");
+    }
+  };
+
+  // Add the missing handleView function
+  const handleView = (product) => {
+    setSelectedProduct(product);
+    setCurrentView("view");
+  };
+
+  // Form helpers
   const resetForm = () => {
     setFormData({
       name: "",
@@ -79,38 +155,31 @@ const ProductManager = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name.trim()) {
-      newErrors.name = "Product name is required";
-    }
+    if (!formData.name.trim()) newErrors.name = "Product name is required";
     if (
       !formData.price ||
       isNaN(formData.price) ||
       parseFloat(formData.price) <= 0
-    ) {
-      newErrors.price = "Please enter a valid price";
-    }
+    )
+      newErrors.price = "Enter valid price";
     if (
       !formData.original_price ||
       isNaN(formData.original_price) ||
       parseFloat(formData.original_price) <= 0
-    ) {
-      newErrors.original_price = "Please enter a valid original price";
+    )
+      newErrors.original_price = "Enter valid original price";
+    if (!formData.description.trim())
+      newErrors.description = "Description required";
+    if (!formData.category.trim()) newErrors.category = "Category required";
+
+    // Validate that at least one key feature is provided
+    const validFeatures = formData.key_features.filter((f) => f.trim() !== "");
+    if (validFeatures.length === 0) {
+      newErrors.key_features = "At least one key feature is required";
     }
-    if (!formData.description.trim()) {
-      newErrors.description = "Description is required";
-    }
-    if (!formData.category.trim()) {
-      newErrors.category = "Category is required";
-    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
   };
 
   const handleArrayChange = (field, index, value) => {
@@ -120,11 +189,15 @@ const ProductManager = () => {
     }));
   };
 
+  const handleInputChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
   const addArrayItem = (field) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: [...prev[field], ""],
-    }));
+    setFormData((prev) => ({ ...prev, [field]: [...prev[field], ""] }));
   };
 
   const removeArrayItem = (field, index) => {
@@ -136,13 +209,14 @@ const ProductManager = () => {
     }
   };
 
-  const handleSubmit = () => {
+  // Fixed handleSubmit function
+  const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    setIsLoading(true);
+    setSubmitLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Clean up the data before sending
       const cleanedData = {
         ...formData,
         price: parseFloat(formData.price),
@@ -151,79 +225,76 @@ const ProductManager = () => {
         size: formData.size.filter((s) => s.trim() !== ""),
       };
 
+      // Remove empty image fields
+      Object.keys(cleanedData).forEach((key) => {
+        if (key.startsWith("image") && !cleanedData[key]) {
+          delete cleanedData[key];
+        }
+      });
+
       if (currentView === "create") {
-        const newProduct = {
-          ...cleanedData,
-          id: Date.now(),
-        };
-        setProducts((prev) => [...prev, newProduct]);
-      } else if (currentView === "edit") {
-        setProducts((prev) =>
-          prev.map((p) =>
-            p.id === selectedProduct.id
-              ? { ...cleanedData, id: selectedProduct.id }
-              : p
-          )
-        );
+        await addProduct(cleanedData);
+      } else if (currentView === "edit" && selectedProduct) {
+        await updateProduct(selectedProduct.id, cleanedData);
       }
 
       resetForm();
       setCurrentView("list");
       setSelectedProduct(null);
-      setIsLoading(false);
-    }, 1000);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert(`Error: ${error.message || "Failed to save product"}`);
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
   const handleEdit = (product) => {
     setSelectedProduct(product);
     setFormData({
-      name: product.name,
-      price: product.price.toString(),
-      original_price: product.original_price.toString(),
-      description: product.description,
-      key_features: [...product.key_features],
-      size: [...product.size],
-      image1: product.image1,
-      image2: product.image2,
-      image3: product.image3,
-      image4: product.image4,
-      category: product.category,
+      name: product.name || "",
+      price: product.price?.toString() || "",
+      original_price: product.original_price?.toString() || "",
+      description: product.description || "",
+      key_features:
+        product.key_features?.length > 0 ? [...product.key_features] : [""],
+      size: product.size?.length > 0 ? [...product.size] : [""],
+      image1: product.image1 || "",
+      image2: product.image2 || "",
+      image3: product.image3 || "",
+      image4: product.image4 || "",
+      category: product.category || "",
     });
     setCurrentView("edit");
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-    }
-  };
-
-  const handleView = (product) => {
-    setSelectedProduct(product);
-    setCurrentView("view");
-  };
-
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = products.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    let filtered = products.filter((product) => {
+      const productName = product.name ? product.name.toLowerCase() : "";
+      const search = searchTerm ? searchTerm.toLowerCase() : "";
+
+      return (
+        productName.includes(search) &&
         (filterCategory === "" || product.category === filterCategory)
-    );
+      );
+    });
 
     return filtered.sort((a, b) => {
-      let aValue = a[sortBy];
-      let bValue = b[sortBy];
+      let aValue = a[sortBy] ?? "";
+      let bValue = b[sortBy] ?? "";
 
-      if (typeof aValue === "string") {
+      if (typeof aValue === "string" && typeof bValue === "string") {
         aValue = aValue.toLowerCase();
         bValue = bValue.toLowerCase();
       }
 
-      if (sortOrder === "asc") {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
+      return sortOrder === "asc"
+        ? aValue > bValue
+          ? 1
+          : -1
+        : aValue < bValue
+        ? 1
+        : -1;
     });
   }, [products, searchTerm, sortBy, sortOrder, filterCategory]);
 
@@ -774,7 +845,7 @@ const ProductManager = () => {
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(product.id)}
+                    onClick={() => deleteProduct(product.id)}
                     className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors duration-300"
                   >
                     <Trash2 className="w-4 h-4" />

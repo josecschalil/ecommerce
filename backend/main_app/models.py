@@ -5,9 +5,7 @@ import uuid
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, phone, password=None, **extra_fields):
-        """
-        Create and return a normal user.
-        """
+
         if not email:
             raise ValueError("The Email field must be set")
 
@@ -18,9 +16,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, name, phone, password=None, **extra_fields):
-        """
-        Create and return a superuser with admin rights.
-        """
+
         extra_fields.setdefault("is_admin", True)
         extra_fields.setdefault("is_superuser", True)  # required by PermissionsMixin
         extra_fields.setdefault("is_active", True)
@@ -29,9 +25,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """
-    Custom User model for E-commerce.
-    """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
@@ -62,10 +56,10 @@ class Product(models.Model):
     description = models.TextField()
     key_features = models.JSONField(default=list)  # Store array as JSON
     size = models.JSONField(default=list)          # Store array as JSON
-    image1 = models.URLField(max_length=500, blank=True, null=True)
-    image2 = models.URLField(max_length=500, blank=True, null=True)
-    image3 = models.URLField(max_length=500, blank=True, null=True)
-    image4 = models.URLField(max_length=500, blank=True, null=True)
+    image1 = models.TextField(null=True)
+    image2 = models.TextField(null=True)
+    image3 = models.TextField(null=True)
+    image4 = models.TextField(null=True)
     category = models.CharField(max_length=100)  # Could also be a ForeignKey if needed
 
     def __str__(self):
