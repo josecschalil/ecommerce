@@ -1,3 +1,4 @@
+import uuid
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -189,30 +190,41 @@ class ProductListCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
 
- 
+    def get_object(self, pk):
+        try:
+            # Convert string to UUID object for querying
+            uuid_obj = uuid.UUID(str(pk))  # Convert to string first
+            return get_object_or_404(Product, pk=uuid_obj)
+        except (ValueError, TypeError):
+            # If it's not a valid UUID, return 404
+            return get_object_or_404(Product, pk=None)  # This will always 404
+
     def get(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+        product = self.get_object(pk)
         serializer = ProductSerializer(product)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+        product = self.get_object(pk)
         serializer = ProductSerializer(product, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def patch(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+        product = self.get_object(pk)
         serializer = ProductSerializer(product, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+        product = self.get_object(pk)
         product.delete()
         return Response({"message": "Product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

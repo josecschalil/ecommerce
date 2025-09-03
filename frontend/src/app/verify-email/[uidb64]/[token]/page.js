@@ -8,7 +8,7 @@ import {
   Shield,
   ArrowRight,
 } from "lucide-react";
-import { useRouter, useParams, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const VerifyEmailPage = () => {
   const [verificationStatus, setVerificationStatus] = useState("loading"); // loading, success, error
