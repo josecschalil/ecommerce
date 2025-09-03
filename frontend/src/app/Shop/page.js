@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { Search, Filter, ChevronDown, Star, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, ChevronDown, Star, Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FilterSidebar from "../components/filter";
 
@@ -9,106 +9,113 @@ const ShoppingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceRange, setPriceRange] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
-  const [showFilters, setShowFilters] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
-  const products = [
-    {
-      id: 1,
-      name: "Pottu pookalam - onam earrings",
-      price: 799.0,
-      originalPrice: 999.0,
-      image:
-        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/m/o/b/-original-imaghx9qkugtbfrn.jpeg?q=100",
-      rating: 4.8,
-      reviews: 124,
-      colors: ["red", "gold"],
-      isNew: true,
-    },
-    {
-      id: 2,
-      name: "Kasav n thetti poov - onam earrings",
-      price: 545.0,
-      image:
-        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/1/p/c/-original-imah9khhnfvstqka.jpeg?q=100",
-      rating: 4.9,
-      reviews: 89,
-      colors: ["white", "red", "gold"],
-      isBestseller: true,
-    },
-    {
-      id: 3,
-      name: "Marigold bloom - onam earring",
-      price: 649.0,
-      image:
-        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/u/r/r/-original-imah9khh8wgzdafb.jpeg?q=100",
-      rating: 4.7,
-      reviews: 156,
-      colors: ["yellow", "green"],
-    },
-    {
-      id: 4,
-      name: "Zari glow - onam earrings",
-      price: 465.0,
-      originalPrice: 580.0,
-      image:
-        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/m/o/b/-original-imaghx9qkugtbfrn.jpeg?q=100",
-      rating: 4.6,
-      reviews: 78,
-      colors: ["white", "gold"],
-    },
-    {
-      id: 5,
-      name: "Banana leaf - onam earrings",
-      price: 560.0,
-      image:
-        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/1/p/c/-original-imah9khhnfvstqka.jpeg?q=100",
-      rating: 4.8,
-      reviews: 203,
-      colors: ["green", "gold"],
-      isNew: true,
-    },
-    {
-      id: 6,
-      name: "Onathumbi - onam earrings",
-      price: 549.0,
-      image:
-        "https://rukminim2.flixcart.com/image/312/312/xif0q/mobile/u/r/r/-original-imah9khh8wgzdafb.jpeg?q=100",
-      rating: 4.5,
-      reviews: 67,
-      colors: ["white", "gold"],
-    },
-  ];
-
-  const categories = ["All", "Earrings", "Necklaces", "Bracelets", "Rings"];
-  const priceRanges = [
-    { value: "all", label: "All Prices" },
-    { value: "0-500", label: "₹0 - ₹500" },
-    { value: "500-1000", label: "₹500 - ₹1000" },
-    { value: "1000+", label: "₹1000+" },
-  ];
-
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "All" ||
-      product.name.toLowerCase().includes(selectedCategory.toLowerCase());
-
-    let matchesPrice = true;
-    if (priceRange !== "all") {
-      const [min, max] = priceRange.split("-").map((p) => p.replace("+", ""));
-      if (max) {
-        matchesPrice =
-          product.price >= parseInt(min) && product.price <= parseInt(max);
-      } else {
-        matchesPrice = product.price >= parseInt(min);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://127.0.0.1:8000/api/products/");
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+    fetchProducts();
+  }, []);
 
-    return matchesSearch && matchesCategory && matchesPrice;
-  });
+  // Sort products based on selected option
+  const sortedAndFilteredProducts = products
+    .filter((product) => {
+      const matchesSearch = product.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "All" ||
+        product.category
+          ?.toLowerCase()
+          .includes(selectedCategory.toLowerCase());
+
+      let matchesPrice = true;
+      if (priceRange !== "all") {
+        const [min, max] = priceRange.split("-").map((p) => p.replace("+", ""));
+        if (max) {
+          matchesPrice =
+            product.price >= parseInt(min) && product.price <= parseInt(max);
+        } else {
+          matchesPrice = product.price >= parseInt(min);
+        }
+      }
+
+      return matchesSearch && matchesCategory && matchesPrice;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price-low":
+          return a.price - b.price;
+        case "price-high":
+          return b.price - a.price;
+        case "rating":
+          return (b.rating || 0) - (a.rating || 0);
+        case "newest":
+          return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        default:
+          return 0;
+      }
+    });
+
+  const handleProductClick = (productId) => {
+    router.push(`/productDetails/${productId}`);
+  };
+
+  const renderStars = (rating) => {
+    const ratingValue = rating || 0;
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`h-4 w-4 ${
+          i < Math.floor(ratingValue)
+            ? "text-yellow-400 fill-current"
+            : "text-slate-300"
+        }`}
+      />
+    ));
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gray-200 border-t-slate-800 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-600 text-2xl">!</span>
+          </div>
+          <p className="text-slate-600 mb-4">Error loading products</p>
+          <p className="text-sm text-slate-500">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-20">
@@ -148,7 +155,7 @@ const ShoppingPage = () => {
                     Onam Special Collection
                   </h2>
                   <p className="text-slate-600">
-                    {filteredProducts.length} products found
+                    {sortedAndFilteredProducts.length} products found
                   </p>
                 </div>
                 <div className="relative">
@@ -160,7 +167,6 @@ const ShoppingPage = () => {
                     <option value="featured">Featured</option>
                     <option value="price-low">Price: Low to High</option>
                     <option value="price-high">Price: High to Low</option>
-                    <option value="rating">Highest Rated</option>
                     <option value="newest">Newest</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
@@ -170,39 +176,35 @@ const ShoppingPage = () => {
 
             {/* Product Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
+              {sortedAndFilteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  onClick={() => router.push(`/productDetails/`)}
+                  onClick={() => handleProductClick(product.id)}
                   className="group backdrop-blur-md bg-white/25 rounded-2xl border border-white/30 shadow-xl overflow-hidden hover:bg-white/35 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"
                 >
                   <div className="relative overflow-hidden">
                     <div className="aspect-w-3 aspect-h-4 bg-gradient-to-br from-white/20 to-slate-100/20">
                       <div className="w-full h-48 flex items-center justify-center">
                         <img
-                          src={product.image}
+                          src={product.image1 || "/placeholder-image.jpg"}
                           alt={product.name}
-                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          onError={(e) => {
+                            e.target.src =
+                              "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjNmNGY2Ii8+CjxwYXRoIGQ9Im0xMDAgNzUgMjUgMjUtMjUgMjUtMjUtMjUgMjUtMjV6IiBmaWxsPSIjZDFkNWRiIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmaWxsPSIjNmI3Mjg4Ij5JbWFnZSBub3QgZm91bmQ8L3RleHQ+Cjwvc3ZnPgo=";
+                          }}
                         />
                       </div>
                     </div>
 
-                    {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-1">
-                      {product.isNew && (
-                        <span className="bg-green-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
-                          New
-                        </span>
-                      )}
-                      {product.isBestseller && (
-                        <span className="bg-rose-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
-                          Bestseller
-                        </span>
-                      )}
-                    </div>
-
                     {/* Wishlist Button */}
-                    <button className="absolute top-3 right-3 p-2 rounded-full bg-white/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/80 hover:scale-110 shadow-lg">
+                    <button
+                      className="absolute top-3 right-3 p-2 rounded-full bg-white/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/80 hover:scale-110 shadow-lg"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent navigation when clicking wishlist
+                        // Add to wishlist logic here
+                      }}
+                    >
                       <Heart className="h-4 w-4 text-slate-600 hover:text-rose-500" />
                     </button>
 
@@ -219,63 +221,47 @@ const ShoppingPage = () => {
                       {product.name}
                     </h3>
 
-                    {/* Rating */}
+                    {/* Category */}
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < Math.floor(product.rating)
-                                ? "text-yellow-400 fill-current"
-                                : "text-slate-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-slate-600">
-                        {product.rating} ({product.reviews})
+                      <span className="text-sm text-slate-600 bg-slate-100/50 px-2 py-1 rounded-full">
+                        {product.category}
                       </span>
-                    </div>
-
-                    {/* Colors */}
-                    <div className="flex gap-2 mb-4">
-                      {product.colors.map((color, index) => (
-                        <div
-                          key={index}
-                          className={`w-5 h-5 rounded-full border-2 border-white/50 shadow-sm backdrop-blur-sm ${
-                            color === "red"
-                              ? "bg-red-500"
-                              : color === "gold"
-                              ? "bg-yellow-400"
-                              : color === "white"
-                              ? "bg-white"
-                              : color === "yellow"
-                              ? "bg-yellow-500"
-                              : color === "green"
-                              ? "bg-green-500"
-                              : "bg-slate-400"
-                          }`}
-                        />
-                      ))}
                     </div>
 
                     {/* Price */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <span className="text-xl font-semibold text-slate-800">
-                          ₹{product.price.toFixed(2)}
+                          ${product.price}
                         </span>
-                        {product.originalPrice && (
-                          <span className="text-sm text-slate-500 line-through">
-                            ₹{product.originalPrice.toFixed(2)}
-                          </span>
-                        )}
+                        {product.original_price &&
+                          product.original_price > product.price && (
+                            <span className="text-sm text-slate-500 line-through">
+                              ${product.original_price}
+                            </span>
+                          )}
                       </div>
                     </div>
 
+                    {/* Key Features */}
+                    {product.key_features &&
+                      product.key_features.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-sm text-slate-600 line-clamp-2">
+                            {product.key_features[0]}
+                            {product.key_features.length > 1 && "..."}
+                          </p>
+                        </div>
+                      )}
+
                     {/* Add to Cart Button */}
-                    <button className="w-full text-sm bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 rounded-xl font-medium hover:from-slate-700 hover:to-slate-600 transform hover:scale-[1.02] transition-all duration-300 shadow-lg">
+                    <button
+                      className="w-full text-sm bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 rounded-xl font-medium hover:from-slate-700 hover:to-slate-600 transform hover:scale-[1.02] transition-all duration-300 shadow-lg"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent navigation when clicking add to cart
+                        // Add to cart logic here
+                      }}
+                    >
                       Add to Cart
                     </button>
                   </div>
@@ -284,7 +270,7 @@ const ShoppingPage = () => {
             </div>
 
             {/* No Products Found */}
-            {filteredProducts.length === 0 && (
+            {sortedAndFilteredProducts.length === 0 && (
               <div className="backdrop-blur-md bg-white/20 rounded-2xl border border-white/30 shadow-xl p-16 text-center">
                 <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
                   <Search className="h-12 w-12 text-slate-500" />
