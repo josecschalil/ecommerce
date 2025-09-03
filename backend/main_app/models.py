@@ -51,8 +51,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    name = models.CharField(max_length=255, db_index=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
     original_price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     key_features = models.JSONField(default=list)  # Store array as JSON
@@ -61,7 +61,8 @@ class Product(models.Model):
     image2 = models.TextField(null=True)
     image3 = models.TextField(null=True)
     image4 = models.TextField(null=True)
-    category = models.CharField(max_length=100)  # Could also be a ForeignKey if needed
+    category = models.CharField(max_length=100, db_index=True)  # Could also be a ForeignKey if needed
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True,null=True)
 
     def __str__(self):
         return self.name

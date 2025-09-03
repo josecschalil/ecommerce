@@ -21,7 +21,7 @@ from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken  # type: ignore
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
-
+from rest_framework.pagination import PageNumberPagination
 User = get_user_model()
 
 class UserRegisterView(APIView):
@@ -174,14 +174,34 @@ class UserProfileView(APIView):
 
 class ProductListCreateView(APIView):
     permission_classes = [AllowAny]
-
-    # GET: List all products
+    
     def get(self, request):
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        products = Product.objects.all().order_by('-created_at')
+        
+        # Filtering
+        category = request.query_params.get('category', None)
+        if category:
+            products = products.filter(category__icontains=category)
+            
+        search = request.query_params.get('search', None)
+        if search:
+            products = products.filter(name__icontains=search)
+            
+        # Price filtering
+        min_price = request.query_params.get('min_price', None)
+        max_price = request.query_params.get('max_price', None)
+        if min_price:
+            products = products.filter(price__gte=min_price)
+        if max_price:
+            products = products.filter(price__lte=max_price)
+        
+        # Pagination
+        paginator = ProductPagination()
+        result_page = paginator.paginate_queryset(products, request)
+        serializer = ProductSerializer(result_page, many=True)
+        
+        return paginator.get_paginated_response(serializer.data)
 
- 
     def post(self, request):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
@@ -190,7 +210,7 @@ class ProductListCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+    
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
 
@@ -228,3 +248,9 @@ class ProductDetailView(APIView):
         product = self.get_object(pk)
         product.delete()
         return Response({"message": "Product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+class ProductPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
