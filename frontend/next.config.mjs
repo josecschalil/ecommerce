@@ -5,6 +5,7 @@ const nextConfig = {
       "images.unsplash.com",
       "rukminim2.flixcart.com",
       "elexy-demo.myshopify.com",
+      "example.com",
     ],
   },
 };
